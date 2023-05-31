@@ -172,4 +172,8 @@ transaction and σ the state:
 - Reduces Deployment Size of the contract (Deployment cost)
 - Reduces function call expenses (code execution cost)
 
+The goal of optimization is to reduce the overall number of operations needed to run a smart contract, and optimized smart contracts not only reduce the gas needed to process transactions, they are also a protection against malicious misuse.
+
 [Read More](https://docs.soliditylang.org/en/v0.8.17/internals/optimizer.html)
+
+[Top 10 Solidity Gas Optimization Techniques](https://www.alchemy.com/overviews/solidity-gas-optimization)

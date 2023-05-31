@@ -6,11 +6,11 @@ contract optimize {
         uint256 a;
         uint256 b;
         // uint256 c;
-        uint256 d;
+        //uint256 d;
         // uint256 x;
         // c = a * b;
         // x = a;
-        d = a * b + 4;
-        return d;
+        //d = a * b + 4;
+        return a * b + 4;
     }
 }
