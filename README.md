@@ -58,3 +58,88 @@ When you compile your contract, you get the `ABI` and the `Bytecode`. The byteco
 ### Slot Location
 
 Variables are stored in a single memory, in slots in ethereum blockchain. The first variable is stored in slot [0], second variable in [1] and so on.
+
+`Gas consumption` is equal to;
+
+    21000 (default gas for every transaction) + Opcode Execution + cost of renting on blockchain + type of transaction
+
+`Tip`: - To minimize costs, only declare necessary state variables.
+
+### Payable vs non-payable gas consumption
+
+Which will cost more gas?
+
+#### Payable
+
+```solidity
+function pay()  external payable {} // Less gas
+```
+
+#### Non-payable
+
+```solidity
+function pay()  external {} // More gas
+```
+
+The difference lies in the opcodes of the 2 functions. The non-payable function has more instructions than the payable function.
+
+The non-payable function cannot receive ether. So when you send ether to it, it reverts and has to send the ether back to the sender.
+
+Due to this functionality, the non-payable function costs more gas.
+
+### Unchecked vs Checked
+
+From sol version `0.7.0` solidity checks for overflows.
+
+#### Checked
+
+```solidity
+// This function reverts
+ function check() public pure returns (uint) {
+        uint8 a = 255; // 0 - 255
+        a + 1;
+        return a;
+    }
+```
+
+#### Unchecked
+
+```solidity
+// In this function, the value of a will change from 255 to 0
+
+ function check() public pure returns (uint) {
+        uint8 a = 255; // 0 - 255
+       unchecked {
+         a + 1;
+       }
+        return a;
+    }
+```
+
+Normally checking for overflow is a good security feature. But there are cases you'll want to used the unchecked expression.
+
+There is a huge gas difference between the two. The unchecked expression is cheaper on gas.
+
+Unchecked produces smaller bytecode compared to regular arithmetic operations, as it doesn't contain the underflow/overflow validation.
+
+So if you want to have a custom error message in case overflow would occur, this code costs less gas to run
+
+```solidity
+uint256 senderBalance = _balances[sender];
+require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
+unchecked {
+
+    // no validation here as it's already validated in the `require()` condition
+    _balances[sender] = senderBalance - amount;
+}
+```
+
+compared to this one
+
+```solidity
+uint256 senderBalance = _balances[sender];
+require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
+
+// redundant validation here
+_balances[sender] = senderBalance - amount;
+```
