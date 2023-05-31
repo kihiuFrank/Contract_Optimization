@@ -143,3 +143,33 @@ require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
 // redundant validation here
 _balances[sender] = senderBalance - amount;
 ```
+
+### Minimum gas consuption (21000)
+
+#### [Ethereum yellow paper (page 8 - Transaction Execution)](https://ethereum.github.io/yellowpaper/paper.pdf)
+
+The execution of a transaction is the most complex part
+of the Ethereum protocol: it defines the state transition
+function Υ. It is assumed that any transactions executed
+first pass the initial tests of intrinsic validity. These include:
+
+1. The transaction is well-formed RLP, with no additional trailing bytes;
+2. the transaction signature is valid;
+3. the transaction nonce is valid (equivalent to the
+   sender account’s current nonce);
+4. the sender account has no contract code deployed
+   (see EIP-3607 by Feist et al. [2021]);
+5. the gas limit is no smaller than the intrinsic gas,
+   g0, used by the transaction; and
+6. the sender account balance contains at least the
+   cost, v0, required in up-front payment.
+
+Formally, we consider the function Υ, with T being a
+transaction and σ the state:
+
+### Solidity Optimizer
+
+- Reduces Deployment Size of the contract (Deployment cost)
+- Reduces function call expenses (code execution cost)
+
+[Read More](https://docs.soliditylang.org/en/v0.8.17/internals/optimizer.html)
