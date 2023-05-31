@@ -29,7 +29,7 @@ Note: 21000 is the minimum gas for every transaction and can change depending on
 
 Note - 30 million is not static. It can change. Increasing it will cause congestion in the network as much more time will be needed before transferring data to next node.
 
-## Gas Consumption
+## Factors Affecting Gas Consumption
 
 These factors affect gas consumption
 
@@ -44,3 +44,17 @@ Transaction vs execution costs
 - Transaction cost
   1. Execution cost
   2. The cost of sending data to the blockchain
+
+## Opcode
+
+An opcode is the portion of a machine language instruction that specifies the `operation` to be performed. Eg; ADD, MUL, STOP, DIV etc.
+
+[Opcode list](https://ethereum.org/en/developers/docs/evm/opcodes/)
+
+[Yellow Paper (Page 30)](https://ethereum.github.io/yellowpaper/paper.pdf)
+
+When you compile your contract, you get the `ABI` and the `Bytecode`. The bytecode contains the opcodes.
+
+### Slot Location
+
+Variables are stored in a single memory, in slots in ethereum blockchain. The first variable is stored in slot [0], second variable in [1] and so on.
