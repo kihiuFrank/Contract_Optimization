@@ -177,3 +177,35 @@ The goal of optimization is to reduce the overall number of operations needed to
 [Read More](https://docs.soliditylang.org/en/v0.8.17/internals/optimizer.html)
 
 [Top 10 Solidity Gas Optimization Techniques](https://www.alchemy.com/overviews/solidity-gas-optimization)
+
+### Require Statement
+
+Compare the two functions below;
+
+#### With 'Require' as first statement
+
+```solidity
+    uint a;
+    function check() public {
+        // uses 21199 gas
+        require(false);
+        a = a + 1;
+    }
+```
+
+#### With 'Require' as last statement
+
+```solidity
+    uint a;
+    function check() public {
+        // uses 43507 gas
+        a = a + 1;
+        require(false);
+    }
+```
+
+The first code consumes less gas since it reverts and never goes to the second line. So it is never using the state variable.
+
+In the second code, we start by running `a = a +1;` which is changing the state of our state variable `"a"`. Then after that finishes, only then are we reverting the function.
+
+So using the require statement first, saves you gas!
