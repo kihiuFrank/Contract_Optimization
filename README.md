@@ -209,3 +209,26 @@ The first code consumes less gas since it reverts and never goes to the second l
 In the second code, we start by running `a = a +1;` which is changing the state of our state variable `"a"`. Then after that finishes, only then are we reverting the function.
 
 So using the require statement first, saves you gas!
+
+### Memory Explosion
+
+#### [Ethereum yellow paper (page 28 - Gas Cost)](https://ethereum.github.io/yellowpaper/paper.pdf)
+
+Memory explosion is the exponential rise in gas cost with the amount of storage being used.
+Make sure your array is of a size you actually require.
+
+#### Example
+
+```solidity
+// SPDX-License-Identifier: MIT pragma solidity >=0.5.0 <0.9.0;
+
+contract Memory {
+
+function call() external pure {
+    // arr[10] -- 21353 -21000 = 353
+    // arr[20] -- 414 gas
+    // arr[30] -- 475 gas
+    uint[10000] memory arr; // 10000 -- 276761 gas (A LOT OF GAS)
+    }
+}
+```
