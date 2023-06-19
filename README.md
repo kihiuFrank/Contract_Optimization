@@ -266,3 +266,43 @@ Since solidity doesn't have memory cleaning, in the `call()` function, solidity 
 Therefore you might expect the gas for the whole `call()` operation to be `8261 * 10 GAS` since we are only calling `memoryAllocate()` 10 times but that will not be the case.
 
 The gas for the `call()` will explode once we reach 10,000 elements and will be `279,781 GAS` as indicated in the comment. NOTE: The gas is slightly higher that for `memCheck()` because of the extra commutations but they are close.
+
+### Function Names
+
+Function names play a crucial role in your gas consumption. If your function names are not appropriate then you'll be paying a hug amount of gas.
+
+Example
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.5.0 <0.9.0;
+
+contract functionName {
+    function three() external pure returns (uint) {
+        // 21210 gas
+        return 1;
+    }
+
+    function two() external pure returns (uint) {
+        // 21210,21232
+        return 1;
+    }
+
+    function one() external pure returns (uint) {
+        //21210,21232,21254
+        return 1;
+    }
+}
+```
+
+In the above code, the only thing we have different are the function names.
+
+When we call `one()` when it's the only function, the gas is `21210`. When we add `two()`, then call `one()` the gas changes to `21232`. Same thing happens when we add another function `three()`. Gas for calling `one()` increases again to `21254`. The gas for function `two()` also increase when we add another function.
+
+So what is happening;-
+
+Solidity converts the function names into `Hexadecimal numbers` for the machine to understand. The smallest hexadecimal number, is the first function for the machine programming language. And since the functions are executed in a linear fashion, to run our `one()` function, solidity has to check all the other functions that precede it to determine if it's the one or not. This checking is work and hence requires gas.
+
+That's why the gas increases the further down the function is.
+
+If you are creating a function that will consume a lot of gas, try to name the function in such a way that the hexadecimal number is at the top of the assembly code. ie. when converted, it's the smallest hexadecimal number.
