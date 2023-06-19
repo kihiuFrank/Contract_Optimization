@@ -217,7 +217,7 @@ So using the require statement first, saves you gas!
 Memory explosion is the exponential rise in gas cost with the amount of storage being used.
 Make sure your array is of a size you actually require.
 
-#### Example
+Example
 
 ```solidity
 // SPDX-License-Identifier: MIT pragma solidity >=0.5.0 <0.9.0;
@@ -232,3 +232,37 @@ function call() external pure {
     }
 }
 ```
+
+### Memory Cleaning
+
+Unlike other programming languages, solidity doesn't have memory cleaning.
+
+Example
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.5.0 <0.9.0;
+
+contract memoryClean {
+    // function memCheck() external pure { // 276,761 GAS
+    // uint[10000] memory arr;
+    //}
+
+    function call() external pure {
+        // 279,781 GAS
+        for (uint i = 0; i < 10; i++) {
+            memoryAllocate();
+        }
+    }
+
+    function memoryAllocate() public pure {
+        uint[1000] memory arr; //8261 GAS
+    }
+}
+```
+
+Since solidity doesn't have memory cleaning, in the `call()` function, solidity will keep allocating memory to that arrays all the times the `for loop` will be executing.
+
+Therefore you might expect the gas for the whole `call()` operation to be `8261 * 10 GAS` since we are only calling `memoryAllocate()` 10 times but that will not be the case.
+
+The gas for the `call()` will explode once we reach 10,000 elements and will be `279,781 GAS` as indicated in the comment. NOTE: The gas is slightly higher that for `memCheck()` because of the extra commutations but they are close.
