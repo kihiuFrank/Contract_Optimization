@@ -55,7 +55,7 @@ An opcode is the portion of a machine language instruction that specifies the `o
 
 When you compile your contract, you get the `ABI` and the `Bytecode`. The bytecode contains the opcodes.
 
-### Slot Location
+## Slot Location
 
 Variables are stored in a single memory, in slots in ethereum blockchain. The first variable is stored in slot [0], second variable in [1] and so on.
 
@@ -65,17 +65,17 @@ Variables are stored in a single memory, in slots in ethereum blockchain. The fi
 
 `Tip`: - To minimize costs, only declare necessary state variables.
 
-### Payable vs non-payable gas consumption
+## Payable vs non-payable gas consumption
 
 Which will cost more gas?
 
-#### Payable
+### Payable
 
 ```solidity
 function pay()  external payable {} // Less gas
 ```
 
-#### Non-payable
+### Non-payable
 
 ```solidity
 function pay()  external {} // More gas
@@ -87,11 +87,11 @@ The non-payable function cannot receive ether. So when you send ether to it, it 
 
 Due to this functionality, the non-payable function costs more gas.
 
-### Unchecked vs Checked
+## Unchecked vs Checked
 
 From sol version `0.7.0` solidity checks for overflows.
 
-#### Checked
+### Checked
 
 ```solidity
 // This function reverts
@@ -102,7 +102,7 @@ From sol version `0.7.0` solidity checks for overflows.
     }
 ```
 
-#### Unchecked
+### Unchecked
 
 ```solidity
 // In this function, the value of a will change from 255 to 0
@@ -144,7 +144,7 @@ require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
 _balances[sender] = senderBalance - amount;
 ```
 
-### Minimum gas consuption (21000)
+## Minimum gas consuption (21000)
 
 #### [Ethereum yellow paper (page 8 - Transaction Execution)](https://ethereum.github.io/yellowpaper/paper.pdf)
 
@@ -167,7 +167,7 @@ first pass the initial tests of intrinsic validity. These include:
 Formally, we consider the function Υ, with T being a
 transaction and σ the state:
 
-### Solidity Optimizer
+## Solidity Optimizer
 
 - Reduces Deployment Size of the contract (Deployment cost)
 - Reduces function call expenses (code execution cost)
@@ -178,7 +178,7 @@ The goal of optimization is to reduce the overall number of operations needed to
 
 [Top 10 Solidity Gas Optimization Techniques](https://www.alchemy.com/overviews/solidity-gas-optimization)
 
-### Require Statement
+## Require Statement
 
 Compare the two functions below;
 
@@ -210,7 +210,7 @@ In the second code, we start by running `a = a +1;` which is changing the state 
 
 So using the require statement first, saves you gas!
 
-### Memory Explosion
+## Memory Explosion
 
 #### [Ethereum yellow paper (page 28 - Gas Cost)](https://ethereum.github.io/yellowpaper/paper.pdf)
 
@@ -233,7 +233,7 @@ function call() external pure {
 }
 ```
 
-### Memory Cleaning
+## Memory Cleaning
 
 Unlike other programming languages, solidity doesn't have memory cleaning.
 
@@ -267,7 +267,7 @@ Therefore you might expect the gas for the whole `call()` operation to be `8261 
 
 The gas for the `call()` will explode once we reach 10,000 elements and will be `279,781 GAS` as indicated in the comment. NOTE: The gas is slightly higher that for `memCheck()` because of the extra commutations but they are close.
 
-### Function Names
+## Function Names
 
 Function names play a crucial role in your gas consumption. If your function names are not appropriate then you'll be paying a hug amount of gas.
 
@@ -306,3 +306,109 @@ Solidity converts the function names into `Hexadecimal numbers` for the machine 
 That's why the gas increases the further down the function is.
 
 If you are creating a function that will consume a lot of gas, try to name the function in such a way that the hexadecimal number is at the top of the assembly code. ie. when converted, it's the smallest hexadecimal number.
+
+## Shift Operator
+
+Bit Shifting;-
+A bit shift moves each digit in a number's binary representation left or right.
+
+In the example below, we will see the importance of using the right operator at the right time.
+
+Example
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.5.0 <0.9.0;
+
+contract shiftOperator {
+    function multiplybyTwo(uint x) public pure returns (uint) {
+        //21994 gas
+        return x * 2;
+
+        // 21793 gas (LESS)
+        return x << 1;
+    }
+
+    function divisionbyTwo(uint x) public pure returns (uint) {
+        // 21987 gas
+        return x / 2;
+
+        // 21815 gas (LESS)
+        return x >> 1;
+    }
+}
+```
+
+So, as we see from the example, there are multiple ways of doing an operation. So whenever you are trying to do an operation, it's better to look at the [opcode table](https://ethereum.org/en/developers/docs/evm/opcodes/) to see which are consuming less amount of gas.
+
+### Left Shifts
+
+When shifting left, the most-significant bit is lost, and a `0` bit is inserted on the other end.
+
+The left shift operator is usually written as `<<`.
+
+```
+0010 << 1 → 0100
+0010 << 2 → 1000
+```
+
+A single left shift multiplies a binary number by 2:
+
+```
+0010 << 1 → 0100
+
+0010 is 2
+0100 is 4
+```
+
+The left shift `(<<)` operator is used for the multiplication.
+
+### Right Shifts
+
+### Logical Right Shifts / Zero fill right shift `(>>>)`
+
+When shifting right with a logical right shift, the least-significant bit is lost and a `0` is inserted on the other end. It shifts right by pushing zeros in from the left, and let the rightmost bits fall off.
+
+```
+1011 >>> 1  →  0101
+1011 >>> 3  →  0001
+```
+
+For positive numbers, a single logical right shift divides a number by 2, throwing out any remainders.
+
+```
+0101 >>> 1  →  0010
+
+0101 is 5
+0010 is 2
+```
+
+### Arithmetic Right Shifts / Signed right shift `(>>)`
+
+When shifting right with an arithmetic right shift, the least-significant bit is lost and the most-significant bit is copied. It shifts right by pushing copies of the leftmost bit in from the left, and let the rightmost bits fall off.
+
+Languages handle arithmetic and logical right shifting in different ways. Solidity provides two right shift operators: >> does an arithmetic right shift and >>> does a logical right shift.
+
+```
+1011 >> 1  →  1101
+1011 >> 3  →  1111
+
+0011 >> 1  →  0001
+0011 >> 2  →  0000
+```
+
+The first two numbers had a `1` as the most significant bit, so more `1's` were inserted during the shift. The last two numbers had a `0` as the most significant bit, so the shift inserted more `0's`.
+
+If a number is encoded using [two's complement](https://www.interviewcake.com/concept/python/binary-numbers?#twos-complement), then an arithmetic right shift preserves the number's sign, while a logical right shift makes the number positive.
+
+```
+// Arithmetic shift
+1011 >> 1 → 1101
+1011 is -5
+1101 is -3
+
+// Logical shift
+1111 >>> 1 → 0111
+1111 is -1
+0111 is 7
+```
