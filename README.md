@@ -412,3 +412,23 @@ If a number is encoded using [two's complement](https://www.interviewcake.com/co
 1111 is -1
 0111 is 7
 ```
+
+## Bit Shifting Overflow Issue
+
+Shifting all of a number's bits to the left by 1 bit is equivalent to multiplying the number by 2. Thus, all of a number's bits to the left by n bits is equivalent to multiplying that number by 2n.
+
+Notice that we fill in the spots that open up with 0s. If a bit goes further left than the place of the most-significant digit, the bit is lost. This means that left shifting a number too far will result in overflow, where the number of bits that are saved by the data type are insufficient to represent the actual number.
+
+For example, let's assume that our computer memory is of 5bits (just for illustration purposes). Let's shift `6`, 3 times. It will be same as 6 by 2^3. The result is 48, which is 110000.
+
+```
+6 = 0,0,1,1,0
+
+0,1,1,0,0 = 12
+1,1,0,0,0 = 24
+1,0,0,0,0 = 16
+```
+
+if you will notice, instead of getting `48` like we wanted, we get `16` because a `1` was dropped when our memory was full hence creating an overflow.
+
+So before using the shift operator, make sure that your execution won't lead into an overflow.
