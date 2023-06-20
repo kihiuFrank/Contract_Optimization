@@ -432,3 +432,17 @@ For example, let's assume that our computer memory is of 5bits (just for illustr
 if you will notice, instead of getting `48` like we wanted, we get `16` because a `1` was dropped when our memory was full hence creating an overflow.
 
 So before using the shift operator, make sure that your execution won't lead into an overflow.
+
+## Storage
+
+- Whenever you are changing a storage variable `from 0 to non-zero `then it cost you `20,000 gas`.
+- Whenever you are changing a storage variable `from non-zero to non-zero `then it cost you `5,000 gas`.
+- Whenever you are changing a storage variable `from non-zero to 0 `then it cost you `refund gas`.
+
+This is because when the value of your variable is non-zero, then ethereum needs to keep track of that variable but if it was 0, them ethereum doesn't need to keep track.
+
+N/B
+
+:- Whenever you are accessing a storage variable `for the first time`, you have to pay an additional `2100 gas`.
+
+:- if the variable has `already been accessed`, you pay `100 gas`.
