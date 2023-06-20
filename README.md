@@ -446,3 +446,15 @@ N/B
 :- Whenever you are accessing a storage variable `for the first time`, you have to pay an additional `2100 gas`.
 
 :- if the variable has `already been accessed`, you pay `100 gas`.
+
+## Integers
+
+Taking two int variables, `uint8 a = 2;` and `uint256 a = 2;` which one do you think will consume more gas?
+
+You might have thought it's the `uint256` but that's not the case. `uint256` consumes less gas compared to `uint8`.
+
+Why is this so? In the Ethereum Virtual Machine (EVM), each storage slot is of 256 bits for each and every variable. So when you declare a `uint8` variable, we only use 8bit of memory from our 256 bit slot, but in the background, the remaining 248 bits get padded with zeros. And that's why we have to pay `much more gas` whenever we are declaring a `smaller size variable`.
+
+When you use a `uint256` variable it will use the whole memory and there will be no padding of zeros. So, to save gas, whenever you are declaring a variable you should use a `256 bit` variable.
+
+NB:- there are exceptions.
