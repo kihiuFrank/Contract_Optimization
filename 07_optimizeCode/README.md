@@ -6,16 +6,15 @@ Task- Optimize the given code and don't forget to see my solution.
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-contract storageSpace {
-    uint256[3] arr = [1, 2, 3];
-    uint256 counter;
+contract optimize {
+    uint256 num = 0;
 
-    function check() external {
-        for (uint256 i; i < arr.length; i++) {
-            // state reads
-            counter++; // state reads and writes
+    function expensiveLoop(uint256 x) public {
+        for (uint256 i = 0; i < x; i++) {
+            num += 1;
         }
     }
+
 }
 ```
 
