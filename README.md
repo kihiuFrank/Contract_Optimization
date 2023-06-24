@@ -458,3 +458,128 @@ Why is this so? In the Ethereum Virtual Machine (EVM), each storage slot is of 2
 When you use a `uint256` variable it will use the whole memory and there will be no padding of zeros. So, to save gas, whenever you are declaring a variable you should use a `256 bit` variable.
 
 NB:- there are exceptions.
+
+## Variable Packing
+
+Solidity contracts have contiguous 32 byte (256 bit) slots used for storage. When we arrange variables so multiple fit in a single slot, it is called variable packing.
+
+If a variable we are trying to pack exceeds the 32 byte limit of the current slot, it gets stored in a new one. We must figure out which variables fit together the best to minimize wasted space.
+
+Because each storage slot costs gas, variable packing helps us optimize our gas usage by reducing the number of slots our contract requires.
+
+Let’s look at an example:
+
+```
+uint128 a;
+uint256 b;
+uint128 c;
+```
+
+These variables are not packed. If `b` was packed with `a`, it would exceed the 32 byte limit so it is instead placed in a new storage slot. The same thing happens with `c` and `b`.
+
+```
+uint128 a;
+uint128 c;
+uint256 b;
+```
+
+These variables are packed. Because packing `c` with `a` does not exceed the 32 byte limit, they are stored in the same slot.
+
+Keep variable packing in mind when choosing data types — a smaller version of a data type is only useful if it helps pack the variable in a storage slot. If a uint128 does not pack, we might as well use a uint256.
+
+NOTE :- Variable packing only occurs in storage — memory and call data does not get packed. You will not save space trying to pack function arguments or local variables.
+
+Use this code to check slots on Remix
+
+```solidity
+//SPDX-License-Identifier: Unlicense
+pragma solidity >=0.5.0 <0.9.0;
+
+contract Slot {
+    uint256 b;
+    uint128 a;
+    uint128 c;
+
+    function getSlotA() external pure returns (uint value) {
+        assembly {
+            value := a.slot
+        }
+    }
+
+    function getSlotB() external pure returns (uint value) {
+        assembly {
+            value := b.slot
+        }
+    }
+
+    function getSlotC() external pure returns (uint value) {
+        assembly {
+            value := c.slot
+        }
+    }
+}
+```
+
+## Constants
+
+If you have a variable who's value will never change, ethereum suggests that instead of using a variable, we should use a constant.
+
+Example;
+
+```
+uint public constant v = 1;
+```
+
+is cheaper than,
+
+```
+uint public v = 1;
+```
+
+When you declare a state variable, it is being stored at state level but when you use the `constant` key word, it is being stored in the `bytecode` of our contract.
+
+## Memory vs Calldata
+
+### `Memory`
+
+Memory is reserved for variables that are defined within the scope of a function. They only persist while a function is called, and thus are temporary variables that cannot be accessed outside this scope (ie anywhere else in your contract besides within that function). However, they are mutable within that function.
+
+### `Calldata`
+
+Calldata is an immutable, temporary location where function arguments are stored, and behaves mostly like memory.
+
+A point to note, you should always use call data with `dynamic variables`. And all this variables should be present in the `external` function argument.
+
+It is recommended to try to use calldata because it avoids unnecessary copies and ensures that the data is unaltered. Arrays and structs with calldata data location can also be returned from functions.
+
+Example to help differentiate
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.5.0 <0.9.0;
+
+contract demo {
+    function memoryTest(
+        string memory _exampleString
+    ) public pure returns (string memory) {
+        _exampleString = "Hello";
+        string memory newString = _exampleString;
+        return newString;
+    }
+
+    function calldataTest(
+        string calldata _exampleString
+    ) external pure returns (string memory) {
+        // you cannot assign a value to _exampleString once it's declared/passed as an arg. Hence the line below will throw an error.
+        // _exampleString = "Hello";
+
+        string memory newString = _exampleString;
+        return newString;
+
+
+        // use calldata in external function.
+        // the variables are immutable in nature.
+        // should be used in the arguments of a function
+    }
+}
+```

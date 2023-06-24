@@ -19,4 +19,13 @@ contract optimize {
         // x = 10000 -> 31,068 gas
         return num = num + x;
     }
+
+    function sol(uint256 x) public {
+        uint256 _num = num; // one state read
+
+        for (uint256 i = 0; i < x; i++) {
+            _num += 1; // local reads and writes
+        }
+        num = _num; // one state write
+    }
 }
