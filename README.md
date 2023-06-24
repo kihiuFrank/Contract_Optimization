@@ -583,3 +583,89 @@ contract demo {
     }
 }
 ```
+
+## Tips for Gas Optimization
+
+1. Always try to use fixed size variable as compared to dynamic size variables.
+2. One function is better than multiple functions as long as it doesn't affect the security of you contract.
+3. No need to initialize by default initialized variables.
+   `uint a;` is more gas efficient than `uint a = 0;` since ethereum with have a assigned to zero by default.
+4. Delete unused variables.
+5. Use newer compiler versions and the optimizer gives gas optimizations and additional safety checks for free.
+6. Make use of single line swaps.
+
+Example
+
+This code below works perfectly fine, but it takes both a lot of code and gas, and there is actually a better way to accomplish the swap with less code and thus less gas consumption.
+
+```solidity
+uint256 a = 1;
+uint256 b = 2;
+
+// swap a and b
+uint256 tmp = a;
+a = b;
+b = tmp;
+```
+
+This more efficient way.
+
+```solidity
+uint256 a = 1;
+uint256 b = 2;
+
+(a, b) = (b, a);
+```
+
+Use solidity documentation to find better ways to solve problems.
+
+7.  Use libraries to save some bytecode. But for simple tasks don't use the libraries because calling them consumes a significant amount of gas and you might end up use more gas.
+8.  Try to read from memory instead of reading from state.
+
+Example
+
+Instead of this;
+
+```solidity
+contract check {
+    uint256 bar;
+
+    mapping (uint => uint) map;
+    uint[5] arr;
+
+    function foo(uint256 someNum) external {
+        // multiple state reads
+        map[bar] = someNum;
+        arr[bar] = someNum;
+    }
+}
+```
+
+Do this;
+
+```solidity
+contract check {
+    uint256 bar;
+
+    mapping (uint => uint) map;
+    uint[5] arr;
+
+    function foo(uint256 someNum) external {
+        uint256 temp = bar; // one state read
+        map[temp] = someNum;
+        arr[temp] = someNum;
+    }
+}
+```
+
+Remember;
+
+Each storage read (opcode sload ) of the same slot costs 2,100 gas the first time during a transaction, and then 100 gas each other time during the same transaction.
+
+9. Use short reason strings in your require statements (withing 32byte).
+
+   UPDATE: Use custom errors instead of strings.
+
+   The benefit of custom errors is that they can significantly reduce the cost to deploy and call a contract, while still providing the same amount of information (or more)
+
+   Custom errors are ABI encoded, and can be decoded using existing ABI decoders. This makes it a lot more efficient to store and use compared to strings.
