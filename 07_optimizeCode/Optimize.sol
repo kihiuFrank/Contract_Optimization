@@ -4,6 +4,7 @@ pragma solidity >=0.4.22 <0.9.0;
 contract optimize {
     uint256 public num;
 
+    // Solution 1
     function expensiveLoop(uint256 x) public returns (uint256) {
         // for (uint256 i = 0; i < x; i++) {
         //     // x = 10 -> 56,870 gas
@@ -20,6 +21,7 @@ contract optimize {
         return num = num + x;
     }
 
+    // solution 2
     function sol(uint256 x) public {
         uint256 _num = num; // one state read
 

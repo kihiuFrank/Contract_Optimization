@@ -7,6 +7,7 @@ contract optimize {
     uint256 constant b = 5;
 
     function repeatedComputations(uint256 x) external pure returns (uint256) {
+        // make is internal or external
         uint256 sum;
         uint256 _a = a; // only one state read
         uint256 _b = b; // only one state read
