@@ -669,3 +669,11 @@ Each storage read (opcode sload ) of the same slot costs 2,100 gas the first tim
    The benefit of custom errors is that they can significantly reduce the cost to deploy and call a contract, while still providing the same amount of information (or more)
 
    Custom errors are ABI encoded, and can be decoded using existing ABI decoders. This makes it a lot more efficient to store and use compared to strings.
+
+10. Internal functions are cheaper than public functions.
+11. Use bytes instead of strings.
+
+    In case the string you want to use is less than 32bytes it is recommended you use bytes instead of string since strings refer to a dynamic data type. And as we have seen, dynamic data types cost more gas than fixed data types.
+
+12. Calldata is cheaper than memory.
+13. External function calls are expensive.
